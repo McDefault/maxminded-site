@@ -6,6 +6,7 @@ export class ShoppingListService {
   shoppingListAdded = new EventEmitter<Ingredient>();
   shoppingListDelete = new EventEmitter<Ingredient>();
   shoppingListClear = new EventEmitter<Ingredient>();
+  toShoppingList = new EventEmitter<Ingredient[]>();
 
   private _ingredients: Ingredient[] = [
     new Ingredient("Apples", 5),
@@ -21,7 +22,19 @@ export class ShoppingListService {
     this._ingredients = ingredients;
   }
 
-  addIngredient(ing: Ingredient) {
+  addShoppingList(ing: Ingredient) {
     this._ingredients.push(ing);
+    this.shoppingListAdded.emit(ing);
+
+
+    // const ingredients: Ingredient[] = this.ingredients;
+    // this._ingredients.push(...ing);
+  }
+
+  addIngredients(ingredients: Ingredient[]) {
+    this._ingredients.push(...ingredients);
+    this.toShoppingList.emit(this._ingredients);
+
+
   }
 }
