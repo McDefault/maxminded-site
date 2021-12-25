@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { Recipe } from '../recipe.model';
 import {ShoppingListService} from "../../shopping-list/shopping-list-service";
-import {ActivatedRoute, Params} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {RecipeService} from "../recipe.service";
 
 @Component({
@@ -13,7 +13,10 @@ import {RecipeService} from "../recipe.service";
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe;
   id: number;
-  constructor(private slService: ShoppingListService, private rcService: RecipeService, private route: ActivatedRoute) {
+  constructor(private slService: ShoppingListService,
+              private rcService: RecipeService,
+              private router: Router,
+              private route: ActivatedRoute) {
 
   }
 
@@ -35,4 +38,9 @@ export class RecipeDetailComponent implements OnInit {
     )
   }
 
+  onClickEditRecipe() {
+    this.router.navigate(['edit'], {relativeTo: this.route});
+    // this.router.navigate(['../',this.id,'edit'], {relativeTo: this.route});
+
+  }
 }
