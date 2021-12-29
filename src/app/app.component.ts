@@ -10,9 +10,4 @@ export class AppComponent {
   loadedFeature = 'recipe';
   disabled;
 
-
-  onNavigate(feature: string) {
-    this.loadedFeature = feature;
-    this.disabled=true;
-  }
 }
