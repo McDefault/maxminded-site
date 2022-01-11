@@ -6,9 +6,9 @@ export class ShoppingListService {
 
   shoppingListAdded = new Subject<Ingredient>();
   startedEditing = new Subject<number>();
-  shoppingListDelete = new EventEmitter<Ingredient>();
-  shoppingListClear = new EventEmitter<Ingredient>();
-  toShoppingList = new EventEmitter<Ingredient[]>();
+  // shoppingListDelete = new EventEmitter<Ingredient>();
+  // shoppingListClear = new EventEmitter<Ingredient>();
+  ingredientsChanged = new Subject<Ingredient[]>();
 
   private _ingredients: Ingredient[] = [
     new Ingredient("Apples", 5),
@@ -29,15 +29,21 @@ export class ShoppingListService {
 
   addShoppingList(ing: Ingredient) {
     this._ingredients.push(ing);
-    this.shoppingListAdded.next(ing);
+    this.ingredientsChanged.next(this.ingredients);
+    // this.shoppingListAdded.next(ing);
 
 
     // const ingredients: Ingredient[] = this.ingredients;
     // this._ingredients.push(...ing);
   }
 
+  addIngredient(ing : Ingredient) {
+    this.ingredients.push(ing);
+    this.ingredientsChanged.next(this.ingredients);
+  }
+
   addIngredients(ingredients: Ingredient[]) {
     this._ingredients.push(...ingredients);
-    this.toShoppingList.emit(this._ingredients);
+    this.ingredientsChanged.next(this.ingredients);
   }
 }
