@@ -46,4 +46,9 @@ export class ShoppingListService {
     this._ingredients.push(...ingredients);
     this.ingredientsChanged.next(this.ingredients);
   }
+
+  updateIngredient ( i: number, ing: Ingredient) {
+    this._ingredients[i] = ing;
+    this.ingredientsChanged.next(this.ingredients);
+  }
 }
