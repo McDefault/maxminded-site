@@ -28,7 +28,7 @@ export class RecipeDetailComponent implements OnInit {
   ngOnInit() {
     // way 1 retrieve id from route
     // const id = this.route.snapshot.params['id'];
-    //wat 2
+    //way 2
     this.route.params. subscribe(
       (params: Params) => {
         // + cast from string to number
@@ -42,5 +42,10 @@ export class RecipeDetailComponent implements OnInit {
     this.router.navigate(['edit'], {relativeTo: this.route});
     // this.router.navigate(['../',this.id,'edit'], {relativeTo: this.route});
 
+  }
+
+  onClickDeleteRecipe() {
+    this.rcService.deleteRecipe(this.id);
+    this.router.navigate(['/recipes']);
   }
 }

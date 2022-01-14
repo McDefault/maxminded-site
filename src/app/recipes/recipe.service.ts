@@ -40,6 +40,10 @@ export class RecipeService {
   updateRecipe(i: number, recipe: Recipe) {
     this._recipes[i] = recipe;
     this.recipesChanged.next(this.recipes)
+  }
 
+  deleteRecipe(i: number) {
+    this._recipes.splice(i, 1);
+    this.recipesChanged.next(this.recipes);
   }
 }
