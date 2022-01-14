@@ -68,13 +68,17 @@
               >
             </div>
             <div class="col-xs-2">
-                <button class="btn btn-danger">X</button>
+                <button
+                  type="button"
+                  class="btn btn-danger"
+                  (click)="onClickDeleteIngredient(i)">X</button>
             </div>
           </div>
           <hr>
           <div class="row">
             <div class="col-xs-12">
               <button type="button" class="btn btn-success" (click)="onAddIngredient()">Add ingridient</button>
+              <button type="button" class="btn btn-danger" (click)="onClearIngredients()">Clear ingridients</button>
             </div>
           </div>
         </div>
