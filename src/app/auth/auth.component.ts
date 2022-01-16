@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {FormArray, FormControl, FormGroup, Validators} from "@angular/forms";
-import {AuthService} from "./auth.service";
+import {AuthService, AuthResponseData} from "./auth.service";
+import {Observable} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-auth',
@@ -13,7 +15,8 @@ export class AuthComponent implements OnInit {
   error: string = null;
   authForm: FormGroup;
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthService,
+              private router: Router) {
   }
 
   onClickSwitchMode() {
@@ -44,19 +47,29 @@ export class AuthComponent implements OnInit {
     if (!this.authForm.valid) return;
     const email = this.authForm.value['email'];
     const password = this.authForm.value['password'];
+
+    let authObservable: Observable<AuthResponseData>;
+
     this.isLoading = true;
+
     if (this.isLoginMode) {
-
+      authObservable = this.authService.login(email, password)
     } else {
-      this.authService.signUp(email, password).subscribe(response => {
-        this.isLoading = false;
+      authObservable = this.authService.signUp(email, password)
+    }
 
+    authObservable.subscribe(
+      response => {
+        this.isLoading = false;
+        this.router.navigate(['/recipes']);
       }, error => {
         this.isLoading = false;
-        this.error = 'An error occured.'
+        console.log(error);
+        this.error = error;
       }, () => {
+
       });
-    }
+
     this.authForm.reset();
   }
 }
