@@ -2,6 +2,7 @@ import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core'
 import {DataStorageService} from "../shared/data-storage.service";
 import {AuthService} from "../auth/auth.service";
 import {Subscription} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -20,6 +21,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     })
   }
 
+  ngOnDestroy(): void {
+    this.subscriptionUser.unsubscribe();
+  }
+
   onClickSaveData() {
     this.dataStorageService.storeRecipes();
   }
@@ -28,7 +33,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.dataStorageService.fetchRecipes().subscribe();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptionUser.unsubscribe();
+
+  onClickLogout() {
+    this.authService.logout();
   }
 }
