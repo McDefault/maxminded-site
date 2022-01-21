@@ -4,6 +4,8 @@ import { Recipe } from '../recipe.model';
 import {ShoppingListService} from "../../shopping-list/shopping-list.service";
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {RecipeService} from "../recipe.service";
+import {Ingredient} from "../../shared/ingredient.model";
+import {DataStorageService} from "../../shared/data-storage.service";
 
 @Component({
   selector: 'app-recipe-detail',
@@ -12,17 +14,19 @@ import {RecipeService} from "../recipe.service";
 })
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe;
-  id: number;
+  id: String;
   constructor(private slService: ShoppingListService,
               private rcService: RecipeService,
+              private dataStorageService: DataStorageService,
               private router: Router,
               private route: ActivatedRoute) {
 
   }
 
   onClickToShoppingList () {
+    console.log(this.recipe);
     // this.slService.toShoppingList.emit(this.recipe.ingredients);
-    this.slService.addIngredients(this.recipe.ingredients);
+    this.slService.addProduct(this.recipe, 1);
   }
 
   ngOnInit() {
@@ -32,7 +36,7 @@ export class RecipeDetailComponent implements OnInit {
     this.route.params. subscribe(
       (params: Params) => {
         // + cast from string to number
-        this.id = +params['id'];
+        this.id = params['id'];
         this.recipe = this.rcService.getRecipe(this.id);
       }
     )
@@ -45,7 +49,10 @@ export class RecipeDetailComponent implements OnInit {
   }
 
   onClickDeleteRecipe() {
-    this.rcService.deleteRecipe(this.id);
-    this.router.navigate(['/recipes']);
+    this.dataStorageService.deleteRecipe(this.id).subscribe(response => {
+      this.rcService.deleteRecipe(this.id);
+      this.router.navigate(['/recipes']);
+    });
+
   }
 }

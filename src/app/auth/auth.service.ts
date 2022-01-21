@@ -4,15 +4,16 @@ import {catchError, tap} from "rxjs/operators";
 import {BehaviorSubject, throwError} from "rxjs";
 import {User} from "./user.model";
 import {Router} from "@angular/router";
+import { environment } from "../../environments/environment";
 
 export interface AuthResponseData {
-  kind: string;
-  idToken: string;
+  message: string;
   email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-  registered?: boolean;
+  _id: string
+  token: string;
+  role: number
+  iat: number;
+  exp: number;
 }
 
 interface AuthRequestBodyPayload {
@@ -31,34 +32,33 @@ export class AuthService {
   }
 
   signUp(email: string, password: string) {
-    const API_KEY = "AIzaSyBM264E0TAg8t5uvE7ec1XWTuQRbVom7mc";
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`;
+    const url = `${environment.API_URL}users/signup`;
+
     return this.http.post<AuthResponseData>(url, {
         email: email,
-        password: password,
-        returnSecureToken: true
+        password: password
       }
     )
       .pipe(
         catchError(this.handleError),
         tap(resData => {
-          this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
+          console.log(resData);
+          // this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
         })
       )
   }
 
   login(email: string, password: string) {
-    const API_KEY = "AIzaSyBM264E0TAg8t5uvE7ec1XWTuQRbVom7mc";
-    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
+    const url = `${environment.API_URL}users/login`;
+
     return this.http.post<AuthResponseData>(url, {
       email: email,
-      password: password,
-      returnSecureToken: true
+      password: password
     })
       .pipe(
         catchError(this.handleError),
         tap(resData => {
-          this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
+          this.handleAuthentication(resData.email, resData._id, resData.token, resData.role, resData.iat, resData.exp);
         })
       )
   }
@@ -112,12 +112,11 @@ export class AuthService {
     return throwError(errorMessage);
   }
 
-  private handleAuthentication(email: string, userId: string, token: string, expiresIn: number) {
-    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000)
-    const user = new User(email, userId, token, expirationDate);
-
+  private handleAuthentication(email, _id, token, role, iat, exp) {
+    const expirationDate = new Date(exp * 1000)
+    const user = new User(email, _id, token, expirationDate);
     this.user.next(user);
     localStorage.setItem('userData', JSON.stringify(user));
-    this.autoLogout(expiresIn * 1000);
+    this.autoLogout((exp - iat) * 1000);
   }
 }

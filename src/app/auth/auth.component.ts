@@ -33,7 +33,7 @@ export class AuthComponent implements OnInit {
       'email': new FormControl(emailPlaceholder, [Validators.required, Validators.email]),
       'password': new FormControl(null, [
         Validators.required,
-        Validators.minLength(6),
+        Validators.minLength(4),
         Validators.maxLength(25)
       ])
     });
@@ -53,22 +53,36 @@ export class AuthComponent implements OnInit {
     this.isLoading = true;
 
     if (this.isLoginMode) {
-      authObservable = this.authService.login(email, password)
+      this.authService.login(email, password).subscribe(
+        response => {
+          this.isLoading = false;
+          this.router.navigate(['/recipes']);
+        }, error => {
+          this.isLoading = false;
+          console.log(error);
+          this.error = error;
+        });
     } else {
-      authObservable = this.authService.signUp(email, password)
+      this.authService.signUp(email, password).subscribe(
+        response => {
+          this.isLoading = false;
+          this.isLoginMode = true;
+        }, error => {
+          this.isLoading = false;
+          console.log(error);
+          this.error = error;
+        });
     }
-
-    authObservable.subscribe(
-      response => {
-        this.isLoading = false;
-        this.router.navigate(['/recipes']);
-      }, error => {
-        this.isLoading = false;
-        console.log(error);
-        this.error = error;
-      }, () => {
-
-      });
+    //
+    // authObservable.subscribe(
+    //   response => {
+    //     this.isLoading = false;
+    //     this.router.navigate(['/recipes']);
+    //   }, error => {
+    //     this.isLoading = false;
+    //     console.log(error);
+    //     this.error = error;
+    //   });
 
     this.authForm.reset();
   }
