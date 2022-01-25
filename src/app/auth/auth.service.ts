@@ -69,10 +69,11 @@ export class AuthService {
       id: string;
       _token: string;
       _tokenExpirationDate: string;
+      role: number;
     } = JSON.parse(localStorage.getItem('userData'));
     if (!userData) return;
 
-    const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+    const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate), userData.role);
 
     if (!loadedUser.token) return;
 
@@ -114,7 +115,7 @@ export class AuthService {
 
   private handleAuthentication(email, _id, token, role, iat, exp) {
     const expirationDate = new Date(exp * 1000)
-    const user = new User(email, _id, token, expirationDate);
+    const user = new User(email, _id, token, expirationDate, role);
     this.user.next(user);
     localStorage.setItem('userData', JSON.stringify(user));
     this.autoLogout((exp - iat) * 1000);

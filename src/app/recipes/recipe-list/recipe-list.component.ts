@@ -6,6 +6,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {Subscription} from "rxjs";
 import {DataStorageService} from "../../shared/data-storage.service";
 import {take} from "rxjs/operators";
+import {AuthService} from "../../auth/auth.service";
 
 @Component({
   selector: 'app-recipe-list',
@@ -15,18 +16,25 @@ import {take} from "rxjs/operators";
 export class RecipeListComponent implements OnInit, OnDestroy {
   recipes: Recipe[];
   subscription: Subscription;
+  subscriptionUser: Subscription;
+  isAdmin = false;
 
   constructor(private recipeService: RecipeService,
               private dataStorageService: DataStorageService,
+              private authService: AuthService,
               private router: Router,
               private route: ActivatedRoute) {
 
   }
 
   ngOnInit() {
+    this.subscriptionUser = this.authService.user.subscribe(user => {
+      this.isAdmin = (user.isAdmin)
+    });
+
     this.subscription = this.recipeService.recipesChanged.subscribe((recipes: Recipe[]) => {
       this.recipes = recipes;
-    })
+    });
     this.recipes = this.recipeService.getRecipes();
     this.dataStorageService.fetchRecipes().pipe(take(1))
       .subscribe();
@@ -39,5 +47,7 @@ export class RecipeListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();
+    this.subscriptionUser.unsubscribe();
+
   }
 }

@@ -1,5 +1,8 @@
 <div class="row">
   <div class="col-xs-10">
+    <div class="alert alert-success" *ngIf="message">
+      <p>{{ message }}</p>
+    </div>
     <app-shopping-edit></app-shopping-edit>
     <hr>
     <ul class="list-group">
@@ -11,5 +14,7 @@
         {{ingredient.recipe.name}} ({{ingredient.amount}})
       </a>
     </ul>
+    <hr>
+    <button class="btn btn-primary" type="button" (click)="onCLickOrder(user)">Order Now!</button>
   </div>
 </div>

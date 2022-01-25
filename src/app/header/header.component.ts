@@ -11,13 +11,16 @@ import {Router} from "@angular/router";
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
+  isAdmin = false;
   private subscriptionUser: Subscription;
   collapsed = true;
   constructor(private dataStorageService: DataStorageService,
               private authService: AuthService) { }
+
   ngOnInit(): void {
     this.subscriptionUser = this.authService.user.subscribe(user => {
       this.isAuthenticated = !!user;
+      this.isAdmin = (user.isAdmin)
     })
   }
 

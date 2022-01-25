@@ -6,6 +6,9 @@ import {ActivatedRoute, Params, Router} from "@angular/router";
 import {RecipeService} from "../recipe.service";
 import {Ingredient} from "../../shared/ingredient.model";
 import {DataStorageService} from "../../shared/data-storage.service";
+import {AuthService} from "../../auth/auth.service";
+import {Subscription} from "rxjs";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-recipe-detail',
@@ -15,9 +18,14 @@ import {DataStorageService} from "../../shared/data-storage.service";
 export class RecipeDetailComponent implements OnInit {
   recipe: Recipe;
   id: String;
+  private subscriptionUser: Subscription;
+
+  isAdmin = false;
+  image =  environment.API_URL + "images/164268693895020180803_092504.jpg";
   constructor(private slService: ShoppingListService,
               private rcService: RecipeService,
               private dataStorageService: DataStorageService,
+              private authService: AuthService,
               private router: Router,
               private route: ActivatedRoute) {
 
@@ -39,7 +47,10 @@ export class RecipeDetailComponent implements OnInit {
         this.id = params['id'];
         this.recipe = this.rcService.getRecipe(this.id);
       }
-    )
+    );
+    this.subscriptionUser = this.authService.user.subscribe(user => {
+      this.isAdmin = (user.isAdmin)
+    });
   }
 
   onClickEditRecipe() {
@@ -54,5 +65,9 @@ export class RecipeDetailComponent implements OnInit {
       this.router.navigate(['/recipes']);
     });
 
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptionUser.unsubscribe();
   }
 }

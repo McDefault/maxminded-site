@@ -1,18 +1,25 @@
-import {Injectable} from "@angular/core";
+import {Injectable, OnDestroy, OnInit} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {Recipe} from "../recipes/recipe.model";
 import {RecipeService} from "../recipes/recipe.service";
 import {map, tap} from 'rxjs/operators';
 import { environment } from "../../environments/environment";
+import {Ingredient} from "./ingredient.model";
+import {User} from "../auth/user.model";
+import {Subscription} from "rxjs";
+import {AuthService} from "../auth/auth.service";
 
 @Injectable({providedIn: 'root'})
 export class DataStorageService {
   private url = environment.API_URL;
+  private subscriptionUser: Subscription;
+  user: User;
 
   constructor(private http: HttpClient,
               private recipeService: RecipeService) {
 
   }
+
 
   storeRecipes() {
     const recipes = this.recipeService.recipes;
@@ -50,5 +57,21 @@ export class DataStorageService {
 
   deleteRecipe(id: String) {
     return this.http.delete(`${this.url}products/${id}`)
+  }
+
+  storeOrder(user: User, order: Ingredient[]) {
+    const json = {
+      user: user.id,
+      products: order.map(item => {
+        return {
+          product: item.recipe._id,
+          quantity: item.amount
+        }
+      })
+    };
+    console.log(json);
+
+    return this.http.post(`${this.url}orders`, json)
+
   }
 }

@@ -67,4 +67,10 @@ export class ShoppingListService {
     this._ingredients.splice(i, 1);
     this.shoppingListChanged.next(this.ingredients);
   }
+
+  orderList() {
+    console.log(this.ingredients);
+    this._ingredients = [];
+    this.shoppingListChanged.next(this.ingredients);
+  }
 }
